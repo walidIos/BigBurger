@@ -26,7 +26,7 @@ class ProductItemTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
     }
-    func initView(model : Catalog){
+    func initView(model : Catalog , isSelected : Bool){
         self.model = model
         self.title.text = model.title
         self.desc.text = model.description
@@ -35,8 +35,9 @@ class ProductItemTableViewCell: UITableViewCell {
         if let url = URL(string: model.thumbnail){
             self.imgView.load(url: url)
         }
-        
-        
+        mAddButton.backgroundColor = isSelected ? .red : .green
+        let titleButton =  isSelected ? "Remove" : "Add"
+        mAddButton.setTitle(titleButton, for: .normal)
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
