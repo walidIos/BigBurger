@@ -83,4 +83,11 @@ extension Catalogdata {
     func getCatalogCartList() -> [Catalog] {
         return listInCart
     }
+    func calculatePrice() -> Float {
+        var some = Float()
+        listInCart.forEach{ catalogInCart in
+            some += catalogInCart.price 
+        }
+        return some
+    }
 }

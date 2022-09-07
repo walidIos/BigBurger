@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Combine
 class ListProductsViewController: UIViewController {
     
     @IBOutlet weak var tableview : UITableView!
@@ -19,8 +18,7 @@ class ListProductsViewController: UIViewController {
         self.catalogData = catalogData
     }
     
-    var productsVariable = PassthroughSubject<[Catalog], Swift.Error>()
-    var cancellables = Set<AnyCancellable>()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         mOrderButton.isEnabled = false
@@ -50,19 +48,6 @@ class ListProductsViewController: UIViewController {
         
         self.tableview.reloadData()
     }
-    func initObservable() {
-            self.productsVariable.sink { completionError in
-                switch completionError {
-                case .failure(let error):
-                    print("error found : \(error)")
-                    break
-                case .finished:
-                    break
-                }
-            } receiveValue: { newList in
-                
-            }.store(in: &cancellables)
-        }
     /*
      // MARK: - Navigation
      
@@ -84,8 +69,10 @@ class ListProductsViewController: UIViewController {
         mOrderButton.isEnabled = true
     }
     @IBAction func onClickOrder(_ sender : Any){
-        let list : [Catalog] = self.catalogData?.getCatalogCartList() ?? []
-        
+        let somePrices = self.catalogData?.calculatePrice()
+        let vc = DetailsViewController()
+        vc.SomePrice = (somePrices ?? 0) / Float(1000) ?? 0
+        self.present(vc, animated: true, completion: nil)
     }
     
 }
