@@ -6,18 +6,24 @@
 //
 
 import UIKit
-
+import Combine
 class ListProductsViewController: UIViewController {
-    var catalogData : Catalogdata?
+    
     @IBOutlet weak var tableview : UITableView!
     @IBOutlet weak var mOrderButton : UIButton!
+    
+    var catalogData : Catalogdata?
     
     convenience init(catalogData: Catalogdata?) {
         self.init()
         self.catalogData = catalogData
     }
+    
+    var productsVariable = PassthroughSubject<[Catalog], Swift.Error>()
+    var cancellables = Set<AnyCancellable>()
     override func viewDidLoad() {
         super.viewDidLoad()
+        mOrderButton.isEnabled = false
         initTableView()
         catalogData?.getAllProduct{
             error in
@@ -44,7 +50,19 @@ class ListProductsViewController: UIViewController {
         
         self.tableview.reloadData()
     }
-    
+    func initObservable() {
+            self.productsVariable.sink { completionError in
+                switch completionError {
+                case .failure(let error):
+                    print("error found : \(error)")
+                    break
+                case .finished:
+                    break
+                }
+            } receiveValue: { newList in
+                
+            }.store(in: &cancellables)
+        }
     /*
      // MARK: - Navigation
      
@@ -54,6 +72,21 @@ class ListProductsViewController: UIViewController {
      // Pass the selected object to the new view controller.
      }
      */
+    func verifyOrders(){
+        let count = self.catalogData?.getCatalogCartList().count ?? 0
+        guard count > 0 else {
+            mOrderButton.setTitle("Order", for: .normal)
+            mOrderButton.backgroundColor = .gray
+            return }
+        
+        mOrderButton.setTitle("\(count) orders", for: .normal)
+        mOrderButton.backgroundColor = .green
+        mOrderButton.isEnabled = true
+    }
+    @IBAction func onClickOrder(_ sender : Any){
+        let list : [Catalog] = self.catalogData?.getCatalogCartList() ?? []
+        
+    }
     
 }
 extension ListProductsViewController: UITableViewDelegate, UITableViewDataSource {
@@ -69,7 +102,8 @@ extension ListProductsViewController: UITableViewDelegate, UITableViewDataSource
         }
         mCell.delegate = self
         mCell.index = indexPath.row
-        mCell.initView(model: model)
+        mCell.initView(model: model, isSelected: catalogData?.isIncarte(indexPath.row) ?? false)
+        
         return mCell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -80,6 +114,11 @@ extension ListProductsViewController: UITableViewDelegate, UITableViewDataSource
 }
 extension ListProductsViewController: ProductItemTableViewCellDelegate {
     func didclickItem(index: Int) {
+        self.catalogData?.addRemoveProduct(index)
+        DispatchQueue.main.async {
+            self.tableview.reloadData()
+        }
+        self.verifyOrders()
         
     }
     

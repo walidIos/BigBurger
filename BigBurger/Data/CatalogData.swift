@@ -9,6 +9,7 @@ import Foundation
 final class Catalogdata {
     var catalogRepository : CatalogRepository
     var listCatlog = [Catalog]()
+    var listInCart = [Catalog]()
     init(catalogRepository :CatalogRepository){
         self.catalogRepository = catalogRepository
     }
@@ -48,5 +49,38 @@ extension Catalogdata {
     // This function will get filtred list
     func getCatalogList() -> [Catalog] {
         return listCatlog
+    }
+    
+    func addRemoveProduct(_ index : Int) {
+        guard let model = self.getItemsByIndex(index: index) else { return }
+        guard let item = self.listInCart.filter({
+            $0.ref == model.ref
+        }).first
+        else {
+            self.listInCart.append(model)
+            return
+        }
+        self.listInCart = self.listInCart.filter({
+            $0.ref != model.ref
+            
+        })
+    }
+    
+    func isIncarte(_ index : Int ) -> Bool{
+        guard let model = self.getItemsByIndex(index: index) else { return false }
+       return !self.listInCart.filter({
+            $0.ref == model.ref
+        }).isEmpty
+        
+    }
+    func getItemsCarteByIndex(index: Int) -> Catalog? {
+        guard index >= 0 && index < self.listInCart.count else {
+            return nil
+        }
+        return listInCart[index]
+    }
+    
+    func getCatalogCartList() -> [Catalog] {
+        return listInCart
     }
 }
