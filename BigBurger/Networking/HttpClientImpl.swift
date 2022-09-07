@@ -11,11 +11,13 @@ protocol HttpClient {
 }
 
 class HttpClientImpl: HttpClient {
+    
     private let httpSession: HTTPSession
     
     init(httpSession: HTTPSession) {
         self.httpSession = httpSession
     }
+    
     func request<T>(_ request: ApiRequest, completion: @escaping (Result<T, ApiError>) -> Void) where T : Decodable {
         var urlRequest = URLRequest(url: request.resource)
         var headers = request.header
