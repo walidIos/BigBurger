@@ -11,9 +11,11 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
-
+    var window: UIWindow?
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        let catlogDataRepository = CatalogRepository(httpClient: HttpClientDecorator(HttpClientImpl(httpSession: URLSession.shared)))
+        let homeViewController = ListProductsViewController(catalogData :Catalogdata(catalogRepository: catlogDataRepository)  )
+        self.window?.rootViewController = homeViewController
         return true
     }
 
