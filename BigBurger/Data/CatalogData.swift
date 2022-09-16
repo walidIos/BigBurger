@@ -41,12 +41,12 @@ extension Catalogdata {
         return listCatlog[index]
     }
     
-    // This function will get count filtred list
+  
     func getCountList() -> Int {
         return listCatlog.count
     }
     
-    // This function will get filtred list
+ 
     func getCatalogList() -> [Catalog] {
         return listCatlog
     }
